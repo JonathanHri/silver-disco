@@ -1,0 +1,40 @@
+// main.js
+
+window.createUI();
+
+async function updateUI() {
+  try {
+
+    const res = await fetch("http://46.101.76.48:3000/data");
+    const data = await res.json();
+
+    console.log("DATA :", data);
+
+    /* ===== HUMIDITÉ ===== */
+    const h = Number(data.humidite);
+    document.getElementById("gaugeHum").style.setProperty("--v", h);
+    document.getElementById("valHum").textContent = h + "%";
+
+    /* ===== TEMP ===== */
+    const t = Number(data.temperature);
+    const percent = (t / 50) * 100;
+
+    document.getElementById("gaugeTemp").style.setProperty("--v", percent);
+    document.getElementById("valTemp").textContent = t + "°C";
+
+    /* ===== BATTERIE ===== */
+    const b = Number(data.batterie);
+
+    // ⚠️ important : batterie = 3.33 → convertir en %
+    const bPercent = (b / 5) * 100;
+
+    document.getElementById("gaugeBatt").style.setProperty("--v", bPercent);
+    document.getElementById("valBatt").textContent = bPercent.toFixed(0) + "%";
+
+  } catch (err) {
+    console.error("Erreur :", err);
+  }
+}
+
+updateUI();
+setInterval(updateUI, 2000);
